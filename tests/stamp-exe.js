@@ -1,0 +1,20 @@
+// Set the .exe's icon and version info (works on any OS, no Wine needed). usage: node tests/stamp-exe.js <exe> <ico> <version>
+const fs = require('fs');
+const ResEdit = require('resedit');
+const PE = require('pe-library');
+const [exe, ico, version = require('../package.json').version] = process.argv.slice(2);
+const v = version.split('.').map(Number);
+const exeData = PE.NtExecutable.from(fs.readFileSync(exe), { ignoreCert: true });
+const res = PE.NtExecutableResource.from(exeData);
+const iconFile = ResEdit.Data.IconFile.from(fs.readFileSync(ico));
+const groups = ResEdit.Resource.IconGroupEntry.fromEntries(res.entries);
+const gid = groups.length ? groups[0].id : 1, lang = groups.length ? groups[0].lang : 1033;
+ResEdit.Resource.IconGroupEntry.replaceIconsForResource(res.entries, gid, lang, iconFile.icons.map((i) => i.data));
+const vi = ResEdit.Resource.VersionInfo.fromEntries(res.entries)[0];
+vi.setStringValues({ lang: 1033, codepage: 1200 }, { ProductName: 'Batch Image Merger', FileDescription: 'Batch Image Merger', CompanyName: 'Personal', OriginalFilename: 'Batch Image Merger.exe', InternalName: 'Batch Image Merger', FileVersion: version, ProductVersion: version });
+vi.removeStringValue({ lang: 1033, codepage: 1200 }, 'LegalCopyright');
+vi.setFileVersion(v[0], v[1], v[2], 0, 1033); vi.setProductVersion(v[0], v[1], v[2], 0, 1033);
+vi.outputToResourceEntries(res.entries);
+res.outputResource(exeData);
+fs.writeFileSync(exe, Buffer.from(exeData.generate()));
+console.log('stamped', exe, version);

@@ -1,0 +1,25 @@
+{
+  "name": "batch-image-merger",
+  "version": "1.3.0",
+  "description": "Batch merge images vertically, horizontally or in grids",
+  "main": "app/main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node tests/unit.test.js",
+    "build": "node build.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@techstark/opencv-js": "^4.10.0-release.1",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron": "^45.1.0",
+    "pe-library": "^1.0.1",
+    "resedit": "^2.0.3"
+  },
+  "productName": "Batch Image Merger"
+}

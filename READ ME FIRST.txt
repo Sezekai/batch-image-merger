@@ -1,0 +1,19 @@
+Batch Image Merger
+==================
+
+Unzip this into  E:\Pictures\Batch Image Merger  so that you get
+
+    E:\Pictures\Batch Image Merger\App\Batch Image Merger.exe
+
+and start it from there.
+
+Where things live
+    App\        the program. Replaced by each update; nothing else is touched.
+    Cache\      thumbnails, cutouts and previews (made beside App the first time; safe to clear).
+    %LOCALAPPDATA%\Batch Image Merger
+                your sets, settings, presets, look, themes, fonts and logs.
+
+To update: close the app, then replace the App folder with the one from the new zip.
+Settings → Storage shows every place with its size, and can open, move or clear them.
+
+Press K in the app for the keyboard shortcuts.

@@ -1,0 +1,53 @@
+# Every push to main: install, test, build, self-test the packaged app, then publish a numbered release.
+# If any step fails, nothing is published. The version comes from package.json; a version that is
+# already released is not published again (raise the version to publish).
+name: Build and release
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Tests
+        shell: bash
+        env:
+          BIM_SAMPLES: samples
+        run: |
+          node tests/unit.test.js
+          node tests/make-samples.js samples
+          node tests/engine.test.js
+      - name: Build
+        run: node build.js
+      - name: Self-test of the packaged app
+        shell: pwsh
+        timeout-minutes: 5
+        run: |
+          $st = Join-Path $env:RUNNER_TEMP 'selftest'
+          $env:BIM_DATA = "$st\data"; $env:BIM_ROOT = "$st\root"; $env:BIM_SELFTEST_OUT = "$st\out"
+          $p = Start-Process -FilePath 'dist\App\Batch Image Merger.exe' -ArgumentList '--selftest' -PassThru -Wait
+          Write-Host "Exit code: $($p.ExitCode)"
+          if (Test-Path "$st\out\result.json") { Get-Content "$st\out\result.json" } else { Write-Host 'No result was written' }
+          if (Test-Path "$st\out\run-log.txt") { Get-Content "$st\out\run-log.txt" }
+          if ($p.ExitCode -ne 0) { exit 1 }
+          Copy-Item "$st\out\window.png" 'dist\selftest-window.png'
+      - name: Publish the release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          V="v$(node -p "require('./package.json').version")"
+          if gh release view "$V" >/dev/null 2>&1; then echo "$V is already released. Raise the version in package.json to publish a new one."; exit 0; fi
+          node -e "const s=require('fs').readFileSync('CHANGES.md','utf8');const m=s.split(/^## /m).find(x=>x.startsWith(process.argv[1]));console.log(m?m.split('\n').slice(1).join('\n').trim():'See CHANGES.md.')" "$V" > notes.md
+          gh release create "$V" "dist/Batch-Image-Merger-$V.zip" "dist/selftest-window.png" --title "$V" --notes-file notes.md --target "$GITHUB_SHA"

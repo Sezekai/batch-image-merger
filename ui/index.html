@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' bimg: data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; connect-src 'self' bimg:">
+<title>Batch Image Merger</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header id="tb">
+  <span class="tname">Batch Image Merger</span><span class="tsep">·</span><span class="tscreen" id="tbScreen">Merge</span>
+  <span class="grow"></span>
+  <div id="pills"></div>
+</header>
+<nav id="abar">
+  <div class="logo" title="Batch Image Merger"><svg viewBox="0 0 24 24" class="ic"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="18" height="8" rx="1.5"/></svg></div>
+  <div class="seg tabs" id="tabs">
+    <button data-tab="merge" class="on" title="Join images in a row, column or grid (1)">Merge<em class="badge" id="bdg-merge"></em></button>
+    <button data-tab="freeform" title="Arrange cut-out subjects freely (2)">Freeform<em class="badge" id="bdg-freeform"></em></button>
+    <button data-tab="overlay" title="Place detailed close-ups over a wide shot (3)">Overlay<em class="badge" id="bdg-overlay"></em></button>
+  </div>
+  <span class="grow"></span>
+  <button class="btn quiet icon" id="undoBtn" disabled data-ic="undo"></button>
+  <button class="btn quiet icon" id="redoBtn" disabled data-ic="redo"></button>
+  <span class="divider"></span>
+  <button class="btn quiet icon" id="lookBtn" title="Look: colours, fonts and themes" data-ic="palette"></button>
+  <button class="btn quiet icon" id="settingsBtn" title="Settings (S)" data-ic="gear"></button>
+  <button class="btn quiet icon" id="keysBtn" title="Keyboard shortcuts (K)" data-ic="keyboard"></button>
+  <button class="btn quiet icon" id="logBtn" title="Log (L)" data-ic="log"></button>
+</nav>
+<div id="screens">
+  <div id="work" class="screen on">
+    <div class="hd"><h1 id="hdTitle">Merge</h1><p id="hdText"></p></div>
+    <div id="banners"></div>
+    <div id="body">
+      <aside id="sets" class="panel">
+        <div class="shead">
+          <div class="row"><b>Sets</b><span class="faint" id="setcount"></span><span class="grow"></span><span class="small faint" id="setsel"></span></div>
+          <div class="row">
+            <button id="addBtn" class="btn grow" title="Each folder becomes a set"><span data-ic="folder"></span>Add folders</button>
+            <button class="btn" id="addParentBtn" title="Every folder inside the one you choose that holds images becomes a set">From a parent…</button>
+            <button class="btn icon" id="rescanBtn" title="Check every folder for new or removed images" data-ic="refresh"></button>
+          </div>
+          <label class="search"><span data-ic="search"></span><input type="text" id="setfilter" placeholder="Filter sets…"><kbd>/</kbd></label>
+          <div class="seg full" id="setstatus"></div>
+        </div>
+        <div id="setlist"></div>
+        <div class="rz" id="rzSets"></div>
+      </aside>
+      <section id="stage" class="panel">
+        <div id="mergeStage" class="stagebox">
+          <div id="stagebar"></div>
+          <div id="canvasWrap"><div id="paper"></div><div id="empty" class="hidden"></div></div>
+          <div id="tray" class="empty"></div>
+        </div>
+        <div id="ffStage" class="stagebox hidden"></div>
+        <div id="ovStage" class="stagebox hidden"></div>
+      </section>
+      <div class="rz" id="rzPanel"></div>
+      <aside id="panel" class="panel"></aside>
+    </div>
+  </div>
+  <div id="settingsScreen" class="screen"></div>
+  <div id="lookScreen" class="screen"></div>
+</div>
+<footer id="status">
+  <div class="sjob"><b id="s-job">Ready</b><span id="s-name"></span></div>
+  <div class="strack" id="s-track"><div class="track"><i id="s-bar"></i></div><span id="s-pct"></span><span id="s-time"></span></div>
+  <span class="grow"></span>
+  <div id="s-acts"></div>
+  <div id="s-exp"></div>
+  <button class="btn quiet sm" id="s-log"><span data-ic="log"></span>Log</button>
+</footer>
+<div id="drawer">
+  <div class="dhead"><b>Log</b><span class="small faint" id="logpath"></span><span class="grow"></span>
+    <button class="btn quiet sm" id="d-open"><span data-ic="folder"></span>Open logs folder</button>
+    <button class="btn quiet sm" id="d-copy"><span data-ic="copy"></span>Copy</button>
+    <button class="btn quiet sm" id="d-clear"><span data-ic="trash"></span>Clear</button>
+    <button class="btn quiet icon sm" id="d-close" title="Close (L or Esc)" data-ic="x"></button></div>
+  <pre id="logtext"></pre>
+</div>
+<div id="viewer" class="hidden"></div>
+<div id="modal" class="hidden"></div>
+<div id="pop" class="hidden"></div>
+<div id="ctx" class="hidden"></div>
+<div id="toasts"></div>
+<div id="dropcover"><div>Drop folders to add them as sets</div></div>
+<script src="fonts/fonts.js"></script>
+<script src="js/theme.js"></script>
+<script src="../engine/layout.js"></script>
+<script src="../engine/geom.js"></script>
+<script src="js/core.js"></script>
+<script src="js/status.js"></script>
+<script src="js/sets.js"></script>
+<script src="js/stage.js"></script>
+<script src="js/panel.js"></script>
+<script src="js/export.js"></script>
+<script src="js/viewer.js"></script>
+<script src="js/view.js"></script>
+<script src="js/ff.js"></script>
+<script src="js/ov.js"></script>
+<script src="js/look.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/boot.js"></script>
+</body>
+</html>
